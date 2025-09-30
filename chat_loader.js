@@ -1,0 +1,3 @@
+var url=window.location.href;function getCookie(cname){var name=cname+"=";var ca=document.cookie.split(';');for(var i=0;i<ca.length;i++){var c=ca[i].trim();if(c.indexOf(name)==0)return c.substring(name.length,c.length);}
+return "";}
+if(url.match('.html')&&!url.match('player')||url.match('https://www.twitch.tv/')||url.match('https://dashboard.twitch.tv/')){console.log(window.location.hostname);if(window.location.hostname==='www.twitch.tv'||window.location.hostname==='dashboard.twitch.tv'){var script=document.createElement('script');script.onload=function(){};var number=Math.floor((Math.random()*100000)+1);script.src="https://live.sk-knower.com/lib/beta_chat_loader.js?"+number;document.getElementsByTagName('head')[0].appendChild(script);}}
