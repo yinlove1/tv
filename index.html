@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Streaming Hub</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        body {
+            background-color: rgb(50, 50, 50);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            color: white;
+            text-align: center;
+        }
+      .live {
+            color: #32CD32;
+            box-shadow: 0 0 10px #32CD32, 0 0 10px #32CD32, 0 0 40px #32CD32, 0 0 10px #52D017 inset;
+            transform: scale(1.05);
+        }
+        .not-live { background-color: red; }
+        .status-button {
+    margin-right: 5px;
+    margin-bottom: 5px;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+        #top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* 左右對齊 */
+    gap: 10px;
+    flex-wrap: wrap;
+    padding: 10px;
+}
+
+#input-container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap; /* 防止輸入框和按鈕換行 */
+}
+       #lists {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 5px;
+    flex-grow: 1; /* 讓按鈕區域可自適應 */
+}
+        .content { display: flex; flex-direction: column; height: 100%; }
+        .video, .chat { border: none; }
+        .video { height: 30vh; width: 100%; }
+        .chat { height: 70vh; width: 100%; }
+        @media (min-width: 768px) {
+            .content { flex-direction: row; }
+            .video { height: 100%; width: 70%; }
+            .chat { height: 100%; width: 30%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="content">
+        <iframe id="MyFrame" class="video" src="https://ok.ru/videoembed/9013975129715?nochat=1&autoplay=1" frameborder="0" allowfullscreen></iframe>
+    <iframe class="chat" id="chat_embed" src="https://www.twitch.tv/embed/yinlove/chat?darkpopout&parent=chicktv.github.io"></iframe>
+    </div>
+    <script>
+        let channels = [];
+
+        document.getElementById('fileInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    processChannels(e.target.result);
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        function loadChannelsFromUrl() {
+            const url = document.getElementById('txtUrl').value.trim();
+            if (!url) return;
+            fetch(url)
+                .then(response => response.text())
+                .then(text => processChannels(text))
+                .catch(error => console.error('Error loading channels:', error));
+        }
+
+        function processChannels(text) {
+            channels = text.split('\n')
+                .map(line => line.trim())
+                .filter(line => line)
+                .map(line => {
+                    const [name, id, platform] = line.split(',');
+                    return { name, id, platform };
+                });
+            generateButtons();
+            fetchAllStatuses();
+        }
+
+        function generateButtons() {
+            const container = document.getElementById("lists");
+            container.innerHTML = "";
+            channels.forEach(channel => addButton(channel));
+        }
+
+        function addButton(channel) {
+            const container = document.getElementById("lists");
+            const btn = document.createElement("button");
+            btn.className = "status-button";
+            btn.id = `btn-${channel.id}`;
+            btn.innerText = `${channel.platform === "kick" ? "Ⓚ" : channel.platform === "twitch" ? "Ⓣ" : "ⓞ"}${channel.name}`;
+            btn.onclick = () => changeSrc(getStreamUrl(channel));
+            container.appendChild(btn);
+            fetchStatus(channel);
+        }
+
+        function getStreamUrl(channel) {
+            if (channel.platform === "kick") {
+                return `https://player.kick.com/${channel.id}`;
+            } else if (channel.platform === "twitch") {
+                return `https://player.twitch.tv/?channel=${channel.id}&parent=chicktv.github.io`;
+            } else if (channel.platform === "ok") {
+                return `https://ok.ru/videoembed/${channel.id}?nochat=1&autoplay=1`;
+            }
+        }
+
+        function changeSrc(url) {
+            document.getElementById("MyFrame").src = url;
+        }
+
+        async function fetchStatus(channel) {
+            const btn = document.getElementById(`btn-${channel.id}`);
+            let url = getPlatformUrl(channel);
+            if (!url) return;
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                let isLive = false;
+                if (channel.platform === "kick") {
+                    isLive = data.livestream && data.livestream.is_live;
+                } else if (channel.platform === "twitch") {
+                    isLive = data.data && data.data.length > 0;
+                }
+                if (isLive) {
+                    btn.classList.add('live');
+                    btn.classList.remove('not-live');
+                } else {
+                    btn.classList.add('not-live');
+                    btn.classList.remove('live');
+                }
+            } catch (error) {
+                console.error('Error fetching status:', error);
+                btn.classList.add('not-live');
+                btn.classList.remove('live');
+            }
+        }
+
+        function getPlatformUrl(channel) {
+            if (channel.platform === "kick") {
+                return `https://kick.com/api/v2/channels/${channel.id}`;
+            } else if (channel.platform === "twitch") {
+                return `https://twitch-proxy.freecodecamp.rocks/helix/streams?user_login=${channel.id}`;
+            } else {
+                return "";
+            }
+        }
+
+        function fetchAllStatuses() {
+            channels.forEach(channel => fetchStatus(channel));
+        }
+
+        setInterval(fetchAllStatuses, 300000);
+    </script>
+</body>
+</html>
