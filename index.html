@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Twitch 頻道 - 左畫面右聊天</title>
+    <title>Twitch & YouTube 頻道 - 左畫面右聊天 + 按鈕轉台</title>
     <style>
         body {
             margin: 0;
@@ -16,10 +16,40 @@
             height: 100vh;
         }
         
+        .navbar {
+            background-color: #18181b;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .navbar button {
+            padding: 8px 16px;
+            font-size: 16px;
+            background-color: #9146ff; /* Twitch 紫色 */
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .navbar button.youtube {
+            background-color: #ff0000; /* YouTube 紅色 */
+        }
+        
+        .navbar button:hover {
+            background-color: #7a3ed4;
+        }
+        
+        .navbar button.youtube:hover {
+            background-color: #cc0000;
+        }
+        
         .container {
             display: flex;
             flex: 1;
-            height: 100vh; /* 滿螢幕高度 */
+            height: calc(100vh - 50px); /* 減去 BAR 高度 */
         }
         
         .video-section {
@@ -44,7 +74,7 @@
             width: 100%;
             height: 100%;
             border: none;
-            background-color: #18181b; /* Twitch 聊天室預設背景 */
+            background-color: #18181b;
         }
         
         /* 響應式：小螢幕時垂直堆疊 */
@@ -60,15 +90,32 @@
                 flex: none;
                 height: 40vh;
             }
+            .navbar {
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+            .navbar button {
+                flex: 1 1 auto;
+                padding: 8px;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- 頂部 BAR：頻道按鈕 -->
+    <div class="navbar">
+        <button onclick="changeChannel('yinlove', 'twitch')">頻道 1</button>
+        <button class="kick" onclick="changeVideo('yinlove', 'kick')">KICK</button>
+
+       
+ <!--<button onclick="changeChannel('channel3', 'twitch')">頻道 3</button> -->
+    </div>
+    
     <div class="container">
         <!-- 左側：主畫面/視頻播放器 -->
         <div class="video-section">
-            <!-- 替換為你的 Twitch 視頻嵌入 iframe，例如從 Twitch 開發者頁面取得 -->
             <iframe 
+                id="videoPlayer" 
                 src="https://player.twitch.tv/?channel=yinlove&parent=yinlove1.github.io" 
                 class="video-player" 
                 allowfullscreen="true" 
@@ -78,13 +125,38 @@
         
         <!-- 右側：聊天室 -->
         <div class="chat-section">
-            <!-- Twitch 聊天室嵌入 iframe -->
             <iframe 
+                id="chatFrame" 
                 src="https://www.twitch.tv/embed/yinlove/chat?parent=yinlove1.github.io" 
                 class="chat-iframe" 
                 frameborder="0">
             </iframe>
         </div>
     </div>
+
+    <script>
+        let currentChannel = 'channel1'; // 記錄當前 Twitch 頻道以保持聊天室
+
+        function changeChannel(channel, platform) {
+            const videoPlayer = document.getElementById('videoPlayer');
+            const chatFrame = document.getElementById('chatFrame');
+            
+            if (platform === 'twitch') {
+                // Twitch 頻道：更新視頻和聊天室
+                videoPlayer.src = `https://player.twitch.tv/?channel=${channel}&parent=localhost`;
+                chatFrame.src = `https://www.twitch.tv/embed/${channel}/chat?parent=localhost`;
+                currentChannel = channel; // 更新當前頻道
+            }
+        }
+
+        function changeVideo(videoId, platform) {
+            const videoPlayer = document.getElementById('videoPlayer');
+            
+            if (platform === 'kick') {
+                // YouTube 影片：僅更新視頻，不更改聊天室
+                videoPlayer.src = `https://player.kick.com/yinlove`;
+            }
+        }
+    </script>
 </body>
 </html>
