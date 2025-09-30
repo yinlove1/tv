@@ -49,12 +49,21 @@
         .video-section {
             text-align: center;
             margin-bottom: 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
         }
-        .video-section iframe {
+        .video-section .player {
             width: 100%;
-            max-width: 800px;
-            height: 450px;
-            border: none;
+            max-width: 900px; /* 放大的播放器寬度 */
+            height: 506px; /* 放大的播放器高度 (16:9 比例) */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+        .video-section .chat {
+            width: 100%;
+            max-width: 300px; /* 聊天室寬度 */
+            height: 506px; /* 與播放器高度一致 */
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
         }
         .content {
@@ -101,8 +110,13 @@
             header h1 {
                 font-size: 1.8rem;
             }
-            .video-section iframe {
-                height: 300px;
+            .video-section .player {
+                max-width: 100%;
+                height: 300px; /* 手機上縮小高度 */
+            }
+            .video-section .chat {
+                max-width: 100%;
+                height: 300px; /* 手機上縮小高度 */
             }
         }
     </style>
@@ -121,16 +135,25 @@
     <div class="container">
         <section class="video-section" id="videos">
             <h2>最新直播</h2>
-            <!-- Twitch 嵌入播放器 -->
-            <iframe
-                src="https://player.twitch.tv/?channel=yinlove&parent=yinlove1.github.io"
-                allowfullscreen>
-            </iframe>
+            <div class="player">
+                <iframe
+                    src="https://player.twitch.tv/?channel=your_twitch_channel&parent=localhost"
+                    allowfullscreen>
+                </iframe>
+            </div>
+            <div class="chat">
+                <iframe
+                    src="https://www.twitch.tv/embed/your_twitch_channel/chat?parent=localhost"
+                    frameborder="0">
+                </iframe>
+            </div>
             <!-- 若要嵌入特定影片，改用以下格式（取消註解並替換 video ID）：
-            <iframe
-                src="https://player.twitch.tv/?video=your_video_id&parent=localhost"
-                allowfullscreen>
-            </iframe>
+            <div class="player">
+                <iframe
+                    src="https://player.twitch.tv/?video=your_video_id&parent=localhost"
+                    allowfullscreen>
+                </iframe>
+            </div>
             -->
         </section>
         <section class="content" id="about">
