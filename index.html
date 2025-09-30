@@ -49,21 +49,24 @@
         .video-section {
             text-align: center;
             margin-bottom: 2rem;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 1rem;
         }
-        .video-section .player {
-            width: 100%;
-            max-width: 900px; /* 放大的播放器寬度 */
-            height: 506px; /* 放大的播放器高度 (16:9 比例) */
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+	
+	.chat {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        .video-section .chat {
+        .chat {
+                width: 100% !important;
+                min-height: 60vh;
+        }
+
+        .video-section iframe {
             width: 100%;
-            max-width: 300px; /* 聊天室寬度 */
-            height: 506px; /* 與播放器高度一致 */
+            max-width: 800px;
+            height: 450px;
+            border: none;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
         }
         .content {
@@ -110,79 +113,45 @@
             header h1 {
                 font-size: 1.8rem;
             }
-            .video-section .player {
-                max-width: 100%;
-                height: 300px; /* 手機上縮小高度 */
-            }
-            .video-section .chat {
-                max-width: 100%;
-                height: 300px; /* 手機上縮小高度 */
+            .video-section iframe {
+                height: 300px;
             }
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>我的 Twitch 頻道</h1>
-        <p>歡迎體驗精彩的直播內容！</p>
-    </header>
     <nav>
-        <a href="#home">首頁</a>
-        <a href="#videos">直播</a>
-        <a href="#about">關於</a>
-        <a href="#contact">聯繫</a>
+        <a href="#videos">Twitch</a>
+        <a href="#videos2">KICK</a>
+
     </nav>
     <div class="container">
         <section class="video-section" id="videos">
-            <h2>最新直播</h2>
-            <div class="player">
-                <iframe
-                    src="https://player.twitch.tv/?channel=yinlove&parent=yinlove1.github.io"
-                    allowfullscreen>
-                </iframe>
-            </div>
-            <div class="chat">
-                <iframe
-                    src="https://www.twitch.tv/embed/yinlove/chat?parent=yinlove1.github.io"
-                    frameborder="0">
-                </iframe>
-            </div>
+            <!-- Twitch 嵌入播放器 -->
+            <iframe
+                src="https://player.twitch.tv/?channel=yinlove&parent=yinlove1.github.io"
+                allowfullscreen>
+            </iframe>
+
+	   <iframe
+            class="chat"
+            id="chat_embed"
+            src="https://www.twitch.tv/embed/yinlove/chat?darkpopout&parent=yinlove1.github.io"
+            allowfullscreen="true"
+            scrolling="yes">
+           </iframe>
+
             <!-- 若要嵌入特定影片，改用以下格式（取消註解並替換 video ID）：
-            <div class="player">
-                <iframe
-                    src="https://player.twitch.tv/?video=your_video_id&parent=localhost"
-                    allowfullscreen>
-                </iframe>
-            </div>
+            <iframe
+                src="https://player.twitch.tv/?video=your_video_id&parent=localhost"
+                allowfullscreen>
+            </iframe>
             -->
-        </section>
-        <section class="content" id="about">
-            <h2>關於我們</h2>
-            <p>這是我的 Twitch 頻道，專注於分享 [你的主題，例如遊戲、聊天、創意內容等]。希望你喜歡我們的直播，歡迎關注和留言！</p>
-        </section>
-        <section id="contact">
-            <h2>聯繫我們</h2>
-            <form id="contact-form">
-                <input type="text" id="name" placeholder="你的姓名" required>
-                <input type="email" id="email" placeholder="你的電子郵件" required>
-                <textarea id="message" placeholder="你的留言" rows="5" required></textarea>
-                <button type="submit">送出</button>
-            </form>
+
         </section>
     </div>
     <footer>
         <p>&copy; 2025 我的 Twitch 頻道. All Rights Reserved.</p>
     </footer>
-
-    <script>
-        // 表單提交處理
-        document.getElementById('contact-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            alert(`感謝你的留言，${name}！我們會盡快回覆至 ${email}。`);
-            this.reset();
-        });
-    </script>
 </body>
 </html>
